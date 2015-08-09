@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="models">
+  <class name="Mail" entity-name="inbox" table="inbox">
+    <id name="id">
+      <generator class="identity"/>
+    </id>
+    <property name="addresser"></property>
+    <property name="receiver"></property>
+    <property name="topic"></property>
+    <property name="content" length="2047"></property>
+    <property name="date"></property>
+    <set name="attach" cascade="all-delete-orphan">
+    	<key column="mail_id"></key>
+    	<one-to-many entity-name="ainbox"/>
+    </set>
+  </class>
+  
+  <class name="Mail" entity-name="outbox" table="outbox">
+    <id name="id">
+      <generator class="identity"/>
+    </id>
+    <property name="addresser"></property>
+    <property name="receiver"></property>
+    <property name="topic"></property>
+    <property name="content" length="2047"></property>
+    <property name="date"></property>
+    <set name="attach" cascade="all-delete-orphan">
+    	<key column="mail_id"></key>
+    	<one-to-many entity-name="aoutbox"/>
+    </set>
+  </class>
+</hibernate-mapping>

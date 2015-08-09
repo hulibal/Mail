@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- 定义数据源的信息 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass">
+			<value>com.mysql.jdbc.Driver</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>jdbc:mysql://localhost:3306/homework</value>
+		</property>
+		<property name="user">
+			<value>root</value>
+		</property>
+		<property name="password">
+			<value>root</value>
+		</property>
+		<property name="maxPoolSize">
+			<value>100</value>
+		</property>
+		<property name="minPoolSize">
+			<value>10</value>
+		</property>
+		<property name="initialPoolSize">
+			<value>20</value>
+		</property>
+		<property name="maxIdleTime">
+			<value>60</value>
+		</property>
+	</bean>
+
+	<!--定义Hibernate的SessionFactory -->
+	<!-- SessionFactory使用的数据源为上面的数据源 -->
+	<!-- 指定了Hibernate的映射文件和配置信息 -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref local="dataSource" />
+		</property>
+		<property name="mappingResources">
+			<list>
+				<value>models/User.hbm.xml</value>
+				<value>models/Mail.hbm.xml</value>
+				<value>models/Attach.hbm.xml</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+				<prop key="show_sql">true</prop>
+				<prop key="hibernate.jdbc.batch_size">20</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="connection.characterEncoding">utf8</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="dao" class="utilities.Dao">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+
+
+	<!--用户注册业务逻辑类 -->
+	<bean id="user" class="models.User" scope="session">		
+	</bean>
+	<!-- <bean id="attach" class="models.Attach" scope="session">		
+	</bean> -->
+	
+
+	<!-- 用户注册的Action -->
+	<bean id="register" class="controllers.Regist" scope="prototype">
+		<property name="dao">
+			<ref bean="dao" />
+		</property>
+	</bean>
+	<bean id="login" class="controllers.Login" scope="prototype">
+		<property name="dao">
+			<ref bean="dao" />
+		</property>
+		<property name="user">
+			<ref bean="user" />
+		</property>
+	</bean>	
+	<bean id="logout" class="controllers.Logout" scope="prototype">
+	</bean>
+	<bean id="send" class="controllers.Send" scope="prototype">
+		<property name="dao">
+			<ref bean="dao" />
+		</property>
+		<property name="user">
+			<ref bean="user" />
+		</property>		
+	</bean>
+	<bean id="getMail" class="controllers.GetMail" scope="prototype">
+		<property name="dao">
+			<ref bean="dao" />
+		</property>
+	</bean>
+	<bean id="check" class="controllers.Check" scope="prototype">
+		<property name="dao">
+			<ref bean="dao" />
+		</property>
+		<property name="user">
+			<ref bean="user" />
+		</property>
+	</bean>
+	<bean id="inbox" class="controllers.Inbox" scope="prototype">
+		<property name="dao">
+			<ref bean="dao" />
+		</property>
+		<property name="user">
+			<ref bean="user" />
+		</property>
+	</bean>
+	<bean id="outbox" class="controllers.Outbox" scope="prototype">
+		<property name="dao">
+			<ref bean="dao" />
+		</property>
+		<property name="user">
+			<ref bean="user" />
+		</property>
+	</bean>
+	<bean id="delete" class="controllers.Delete" scope="prototype">
+		<property name="dao">
+			<ref bean="dao" />
+		</property>
+		<property name="user">
+			<ref bean="user" />
+		</property>
+	</bean>	
+	<bean id="securityCode" class="controllers.SecurityCodeImage" scope="prototype">
+		<property name="user">
+			<ref bean="user" />
+		</property>
+	</bean>
+	<bean id="download" class="controllers.DownloadFiles" scope="prototype">
+		<property name="dao">
+			<ref bean="dao" />
+		</property>
+	</bean>
+	<bean id="storeall" class="controllers.StoreAll" scope="prototype">
+		<property name="user">
+			<ref bean="user" />
+		</property>
+	</bean>
+	<bean id="importmail" class="controllers.ImportMail" scope="prototype">
+		<property name="dao">
+			<ref bean="dao" />
+		</property>
+		<property name="user">
+			<ref bean="user" />
+		</property>
+	</bean>
+	<!-- <bean id="uploadfile" class="controllers.uploadFiles" scope="prototype">		
+		<property name="attach">
+			<ref bean="attach" />
+		</property>
+	</bean> -->
+
+</beans>
